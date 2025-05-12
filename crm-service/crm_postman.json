@@ -1,0 +1,447 @@
+{
+  "info": {
+    "name": "CRM Service API",
+    "description": "API collection for CRM Service endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:8092/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8092",
+          "path": ["health"]
+        },
+        "description": "Check if the CRM service is up and running"
+      }
+    },
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "Get All Customers",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8092/customers?limit=10&offset=0",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8092",
+              "path": ["customers"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            },
+            "description": "Retrieve a list of customers with pagination"
+          }
+        },
+        {
+          "name": "Get Customer by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8092/customers/{{customer_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8092",
+              "path": ["customers", "{{customer_id}}"]
+            },
+            "description": "Retrieve a specific customer by their ID"
+          }
+        },
+        {
+          "name": "Create Customer",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "http://localhost:8092/customers",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8092",
+              "path": ["customers"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@example.com\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"phone_number\": \"+1234567890\",\n  \"company_name\": \"Acme Corp\",\n  \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Create a new customer"
+          }
+        },
+        {
+          "name": "Update Customer",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "http://localhost:8092/customers/{{customer_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8092",
+              "path": ["customers", "{{customer_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"updated@example.com\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Smith\",\n  \"phone_number\": \"+1987654321\",\n  \"company_name\": \"Updated Corp\",\n  \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Update an existing customer"
+          }
+        },
+        {
+          "name": "Delete Customer",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:8092/customers/{{customer_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8092",
+              "path": ["customers", "{{customer_id}}"]
+            },
+            "description": "Delete a customer (only if they have no tickets)"
+          }
+        },
+        {
+          "name": "Search Customers",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8092/customers/search?q=Acme",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8092",
+              "path": ["customers", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "Acme"
+                }
+              ]
+            },
+            "description": "Search for customers by name, email, or company"
+          }
+        },
+        {
+          "name": "Get Customer Tickets",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8092/customers/{{customer_id}}/tickets",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8092",
+              "path": ["customers", "{{customer_id}}", "tickets"]
+            },
+            "description": "Get all tickets associated with a specific customer"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tickets",
+      "item": [
+        {
+          "name": "Get All Tickets",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8092/tickets?limit=20&offset=0",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8092",
+              "path": ["tickets"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            },
+            "description": "Retrieve all tickets with pagination"
+          }
+        },
+        {
+          "name": "Get Ticket by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8092/tickets/{{ticket_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8092",
+              "path": ["tickets", "{{ticket_id}}"]
+            },
+            "description": "Retrieve a specific ticket by its ID"
+          }
+        },
+        {
+          "name": "Create Ticket",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "http://localhost:8092/tickets",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8092",
+              "path": ["tickets"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_id\": \"{{customer_id}}\",\n  \"subject\": \"Cannot access account\",\n  \"description\": \"I've been trying to log in but keep getting an error message.\",\n  \"priority\": \"medium\",\n  \"tags\": [\"login\", \"error\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Create a new support ticket"
+          }
+        },
+        {
+          "name": "Update Ticket",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "http://localhost:8092/tickets/{{ticket_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8092",
+              "path": ["tickets", "{{ticket_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject\": \"Updated: Cannot access account\",\n  \"description\": \"I've been trying to log in but keep getting an error message.\",\n  \"priority\": \"high\",\n  \"status\": \"open\",\n  \"tags\": [\"login\", \"error\", \"urgent\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Update an existing ticket"
+          }
+        },
+        {
+          "name": "Assign Ticket to Agent",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "http://localhost:8092/tickets/{{ticket_id}}/assign",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8092",
+              "path": ["tickets", "{{ticket_id}}", "assign"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agent_id\": \"{{agent_id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Assign a ticket to a specific support agent"
+          }
+        },
+        {
+          "name": "Add Comment to Ticket",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "http://localhost:8092/tickets/{{ticket_id}}/comments",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8092",
+              "path": ["tickets", "{{ticket_id}}", "comments"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"content\": \"I've investigated this issue and found that the password has been reset.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Add a comment to a ticket"
+          }
+        },
+        {
+          "name": "Close Ticket",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "http://localhost:8092/tickets/{{ticket_id}}/close",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8092",
+              "path": ["tickets", "{{ticket_id}}", "close"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resolution\": \"Reset user's password and verified they can now log in successfully.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Close a ticket with resolution details"
+          }
+        },
+        {
+          "name": "Get Ticket History",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8092/tickets/{{ticket_id}}/history",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8092",
+              "path": ["tickets", "{{ticket_id}}", "history"]
+            },
+            "description": "Get the history of events for a specific ticket"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Agents",
+      "item": [
+        {
+          "name": "Get All Agents",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8092/agents",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8092",
+              "path": ["agents"]
+            },
+            "description": "Retrieve all support agents"
+          }
+        },
+        {
+          "name": "Get Agent by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8092/agents/{{agent_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8092",
+              "path": ["agents", "{{agent_id}}"]
+            },
+            "description": "Retrieve a specific agent by their ID"
+          }
+        },
+        {
+          "name": "Create Agent",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "http://localhost:8092/agents",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8092",
+              "path": ["agents"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"agent@example.com\",\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Smith\",\n  \"department\": \"Technical Support\",\n  \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Create a new support agent"
+          }
+        },
+        {
+          "name": "Update Agent",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "http://localhost:8092/agents/{{agent_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8092",
+              "path": ["agents", "{{agent_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"agent@example.com\",\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Johnson\",\n  \"department\": \"Customer Success\",\n  \"status\": \"away\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Update an existing agent's information"
+          }
+        },
+        {
+          "name": "Get Agent Workloads",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8092/agents/workloads",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8092",
+              "path": ["agents", "workloads"]
+            },
+            "description": "Get workload statistics for all agents"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "customer_id",
+      "value": "",
+      "description": "ID of a customer"
+    },
+    {
+      "key": "ticket_id",
+      "value": "",
+      "description": "ID of a ticket"
+    },
+    {
+      "key": "agent_id",
+      "value": "",
+      "description": "ID of a support agent"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "description": "ID of the user adding a comment"
+    }
+  ]
+}
