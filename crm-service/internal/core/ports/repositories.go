@@ -13,6 +13,7 @@ type CustomerRepository interface {
 	UpdateCustomer(ctx context.Context, customer *domain.Customer) error
 	DeleteCustomer(ctx context.Context, id string) error
 	SearchCustomers(ctx context.Context, query string) ([]domain.Customer, error)
+	GetCount(ctx context.Context) (int64, error)
 }
 
 // TicketRepository defines operations for ticket management
@@ -27,6 +28,7 @@ type TicketRepository interface {
 	AddTicketEvent(ctx context.Context, event *domain.TicketEvent) error
 	GetTicketEvents(ctx context.Context, ticketID string) ([]domain.TicketEvent, error)
 	GetOpenTicketCountByAgent(ctx context.Context) (map[string]int, error)
+	GetCount(ctx context.Context) (int64, error)
 }
 
 // AgentRepository defines operations for agent management

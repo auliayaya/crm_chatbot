@@ -215,3 +215,13 @@ func (r *CustomerRepository) SearchCustomers(ctx context.Context, query string) 
 
 	return customers, nil
 }
+
+func (r *CustomerRepository) GetCount(ctx context.Context) (int64, error) {
+	var count int64
+	query := "SELECT COUNT(*) FROM customers"
+	err := r.db.QueryRowContext(ctx, query).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}

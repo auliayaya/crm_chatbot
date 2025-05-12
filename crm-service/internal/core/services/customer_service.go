@@ -63,3 +63,8 @@ func (s *CustomerServiceImpl) DeleteCustomer(ctx context.Context, id string) err
 func (s *CustomerServiceImpl) SearchCustomers(ctx context.Context, query string) ([]domain.Customer, error) {
 	return s.repository.SearchCustomers(ctx, query)
 }
+
+// GetCustomersCount retrieves the total number of customers
+func (s *CustomerServiceImpl) GetCustomersCount(ctx context.Context) (int64, error) {
+	return s.repository.GetCount(ctx)
+}

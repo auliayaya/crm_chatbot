@@ -22,6 +22,12 @@ func (h *Handlers) GetCustomers(w http.ResponseWriter, r *http.Request) {
 		offset = 0 // Default offset
 	}
 
+	// Calculate current page
+	page := 1
+	if limit > 0 {
+		page = (offset / limit) + 1
+	}
+
 	// Get customers from service
 	customers, err := h.customerService.GetCustomers(r.Context(), limit, offset)
 	if err != nil {
@@ -29,7 +35,22 @@ func (h *Handlers) GetCustomers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.respondWithJSON(w, http.StatusOK, customers)
+	// Get total count
+	total, err := h.customerService.GetCustomersCount(r.Context())
+	if err != nil {
+		h.respondWithError(w, http.StatusInternalServerError, "Failed to retrieve customer count")
+		return
+	}
+
+	// Create response structure
+	response := map[string]interface{}{
+		"customers": customers,
+		"total":     total,
+		"page":      page,
+		"pageSize":  limit,
+	}
+
+	h.respondWithJSON(w, http.StatusOK, response)
 }
 
 // GetCustomer handles GET /customers/{id}

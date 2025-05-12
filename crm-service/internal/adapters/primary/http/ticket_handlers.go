@@ -23,6 +23,12 @@ func (h *Handlers) GetTickets(w http.ResponseWriter, r *http.Request) {
 		offset = 0 // Default offset
 	}
 
+	// Calculate current page
+	page := 1
+	if limit > 0 {
+		page = (offset / limit) + 1
+	}
+
 	// Get tickets from service
 	tickets, err := h.ticketService.GetTickets(r.Context(), limit, offset)
 	if err != nil {
@@ -31,7 +37,23 @@ func (h *Handlers) GetTickets(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.respondWithJSON(w, http.StatusOK, tickets)
+	// Get total count
+	total, err := h.ticketService.GetTicketsCount(r.Context())
+	if err != nil {
+		logger.Printf("Error retrieving ticket count: %v", err)
+		h.respondWithError(w, http.StatusInternalServerError, "Failed to retrieve ticket count")
+		return
+	}
+
+	// Create response structure
+	response := map[string]interface{}{
+		"tickets":  tickets,
+		"total":    total,
+		"page":     page,
+		"pageSize": limit,
+	}
+
+	h.respondWithJSON(w, http.StatusOK, response)
 }
 
 // GetTicket handles GET /tickets/{id}

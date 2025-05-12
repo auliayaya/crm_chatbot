@@ -23,7 +23,7 @@ func main() {
 	log.Printf("Starting API Gateway on port %s", cfg.Port)
 	log.Printf("Services: CRM=%s, Chat=%s, User=%s",
 		cfg.CRMServiceURL, cfg.ChatServiceURL, cfg.UserServiceURL)
-
+	middleware.InitCORS(cfg)
 	// Create router
 	router := mux.NewRouter()
 

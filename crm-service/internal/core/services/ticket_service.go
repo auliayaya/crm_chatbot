@@ -315,3 +315,8 @@ func (s *TicketServiceImpl) GetTicketsByCustomer(ctx context.Context, customerID
 	// Get tickets for customer
 	return s.ticketRepo.GetTicketsByCustomer(ctx, customerID)
 }
+
+// GetTicketsCount retrieves the total number of tickets
+func (s *TicketServiceImpl) GetTicketsCount(ctx context.Context) (int64, error) {
+	return s.ticketRepo.GetCount(ctx)
+}

@@ -29,7 +29,7 @@ func CORS(next http.Handler) http.Handler {
                     break
                 }
             }
-            
+        
             if allowOrigin {
                 w.Header().Set("Access-Control-Allow-Origin", origin)
                 w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")

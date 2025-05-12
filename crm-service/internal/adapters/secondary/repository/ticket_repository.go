@@ -307,3 +307,13 @@ func (r *TicketRepository) GetOpenTicketCountByAgent(ctx context.Context) (map[s
 
 	return counts, nil
 }
+
+func (r *TicketRepository) GetCount(ctx context.Context) (int64, error) {
+	var count int64
+	query := "SELECT COUNT(*) FROM tickets"
+	err := r.db.QueryRowContext(ctx, query).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
