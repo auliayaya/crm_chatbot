@@ -1,0 +1,747 @@
+{
+  "info": {
+    "name": "CRM-Chatbot API Gateway",
+    "description": "Collection for CRM-Chatbot API Gateway services",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Gateway",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{gateway_url}}/health",
+              "host": ["{{gateway_url}}"],
+              "path": ["health"]
+            },
+            "description": "Check the health status of the API Gateway"
+          }
+        },
+        {
+          "name": "API Documentation",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{gateway_url}}/api-docs",
+              "host": ["{{gateway_url}}"],
+              "path": ["api-docs"]
+            },
+            "description": "Get API documentation"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway_url}}/auth/login",
+              "host": ["{{gateway_url}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}"
+            },
+            "description": "Authenticate user and get access token"
+          }
+        },
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway_url}}/auth/register",
+              "host": ["{{gateway_url}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"newuser@example.com\",\n    \"password\": \"password123\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\"\n}"
+            },
+            "description": "Register a new user"
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway_url}}/auth/forgot-password",
+              "host": ["{{gateway_url}}"],
+              "path": ["auth", "forgot-password"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"user@example.com\"\n}"
+            },
+            "description": "Request password reset link"
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway_url}}/auth/reset-password",
+              "host": ["{{gateway_url}}"],
+              "path": ["auth", "reset-password"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"token\": \"reset_token_here\",\n    \"password\": \"new_password\"\n}"
+            },
+            "description": "Reset password using token"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway_url}}/auth/refresh-token",
+              "host": ["{{gateway_url}}"],
+              "path": ["auth", "refresh-token"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"refresh_token\": \"refresh_token_here\"\n}"
+            },
+            "description": "Get new access token using refresh token"
+          }
+        }
+      ]
+    },
+    {
+      "name": "CRM",
+      "item": [
+        {
+          "name": "Customers",
+          "item": [
+            {
+              "name": "Get All Customers",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gateway_url}}/api/crm/customers?limit=10&offset=0",
+                  "host": ["{{gateway_url}}"],
+                  "path": ["api", "crm", "customers"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                },
+                "description": "Get all customers with pagination"
+              }
+            },
+            {
+              "name": "Get Customer by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gateway_url}}/api/crm/customers/{{customer_id}}",
+                  "host": ["{{gateway_url}}"],
+                  "path": ["api", "crm", "customers", "{{customer_id}}"]
+                },
+                "description": "Get customer details by ID"
+              }
+            },
+            {
+              "name": "Create Customer",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gateway_url}}/api/crm/customers",
+                  "host": ["{{gateway_url}}"],
+                  "path": ["api", "crm", "customers"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"customer@example.com\",\n    \"first_name\": \"Jane\",\n    \"last_name\": \"Smith\",\n    \"phone_number\": \"+1234567890\",\n    \"company_name\": \"Acme Corp\",\n    \"status\": \"active\"\n}"
+                },
+                "description": "Create a new customer"
+              }
+            },
+            {
+              "name": "Update Customer",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gateway_url}}/api/crm/customers/{{customer_id}}",
+                  "host": ["{{gateway_url}}"],
+                  "path": ["api", "crm", "customers", "{{customer_id}}"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"updated@example.com\",\n    \"first_name\": \"Jane\",\n    \"last_name\": \"Smith\",\n    \"phone_number\": \"+1987654321\",\n    \"company_name\": \"Updated Corp\",\n    \"status\": \"active\"\n}"
+                },
+                "description": "Update an existing customer"
+              }
+            },
+            {
+              "name": "Search Customers",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gateway_url}}/api/crm/customers/search?q=Acme",
+                  "host": ["{{gateway_url}}"],
+                  "path": ["api", "crm", "customers", "search"],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "Acme"
+                    }
+                  ]
+                },
+                "description": "Search for customers by name, email, or company"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Tickets",
+          "item": [
+            {
+              "name": "Get All Tickets",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gateway_url}}/api/crm/tickets?limit=10&offset=0",
+                  "host": ["{{gateway_url}}"],
+                  "path": ["api", "crm", "tickets"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                },
+                "description": "Get all support tickets with pagination"
+              }
+            },
+            {
+              "name": "Get Ticket by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gateway_url}}/api/crm/tickets/{{ticket_id}}",
+                  "host": ["{{gateway_url}}"],
+                  "path": ["api", "crm", "tickets", "{{ticket_id}}"]
+                },
+                "description": "Get ticket details by ID"
+              }
+            },
+            {
+              "name": "Create Ticket",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gateway_url}}/api/crm/tickets",
+                  "host": ["{{gateway_url}}"],
+                  "path": ["api", "crm", "tickets"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"customer_id\": \"{{customer_id}}\",\n    \"subject\": \"Can't access my account\",\n    \"description\": \"I've been trying to log in for hours with no success\",\n    \"priority\": \"high\",\n    \"tags\": [\"login\", \"access\", \"account\"]\n}"
+                },
+                "description": "Create a new support ticket"
+              }
+            },
+            {
+              "name": "Assign Ticket",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gateway_url}}/api/crm/tickets/{{ticket_id}}/assign",
+                  "host": ["{{gateway_url}}"],
+                  "path": ["api", "crm", "tickets", "{{ticket_id}}", "assign"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"agent_id\": \"{{agent_id}}\"\n}"
+                },
+                "description": "Assign ticket to a support agent"
+              }
+            },
+            {
+              "name": "Add Comment",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gateway_url}}/api/crm/tickets/{{ticket_id}}/comments",
+                  "host": ["{{gateway_url}}"],
+                  "path": ["api", "crm", "tickets", "{{ticket_id}}", "comments"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"content\": \"I've investigated the issue and found the problem. Working on a fix now.\"\n}"
+                },
+                "description": "Add a comment to a ticket"
+              }
+            },
+            {
+              "name": "Close Ticket",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gateway_url}}/api/crm/tickets/{{ticket_id}}/close",
+                  "host": ["{{gateway_url}}"],
+                  "path": ["api", "crm", "tickets", "{{ticket_id}}", "close"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"resolution\": \"Reset user's password and verified they can now access their account.\"\n}"
+                },
+                "description": "Close a ticket with resolution"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Agents",
+          "item": [
+            {
+              "name": "Get All Agents",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gateway_url}}/api/crm/agents",
+                  "host": ["{{gateway_url}}"],
+                  "path": ["api", "crm", "agents"]
+                },
+                "description": "Get all support agents"
+              }
+            },
+            {
+              "name": "Get Agent by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gateway_url}}/api/crm/agents/{{agent_id}}",
+                  "host": ["{{gateway_url}}"],
+                  "path": ["api", "crm", "agents", "{{agent_id}}"]
+                },
+                "description": "Get agent details by ID"
+              }
+            },
+            {
+              "name": "Create Agent",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gateway_url}}/api/crm/agents",
+                  "host": ["{{gateway_url}}"],
+                  "path": ["api", "crm", "agents"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"agent@example.com\",\n    \"first_name\": \"Sarah\",\n    \"last_name\": \"Johnson\",\n    \"department\": \"Technical Support\",\n    \"status\": \"active\"\n}"
+                },
+                "description": "Create a new support agent"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Chat",
+      "item": [
+        {
+          "name": "Get All Chat Sessions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway_url}}/api/chat/sessions?limit=10&offset=0",
+              "host": ["{{gateway_url}}"],
+              "path": ["api", "chat", "sessions"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            },
+            "description": "Get all chat sessions with pagination"
+          }
+        },
+        {
+          "name": "Get Chat Session by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway_url}}/api/chat/sessions/{{session_id}}",
+              "host": ["{{gateway_url}}"],
+              "path": ["api", "chat", "sessions", "{{session_id}}"]
+            },
+            "description": "Get chat session details by ID"
+          }
+        },
+        {
+          "name": "Create Chat Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway_url}}/api/chat/sessions",
+              "host": ["{{gateway_url}}"],
+              "path": ["api", "chat", "sessions"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"customer_id\": \"{{customer_id}}\",\n    \"ticket_id\": \"{{ticket_id}}\"\n}"
+            },
+            "description": "Create a new chat session"
+          }
+        },
+        {
+          "name": "Get Messages for Session",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway_url}}/api/chat/sessions/{{session_id}}/messages?limit=50",
+              "host": ["{{gateway_url}}"],
+              "path": ["api", "chat", "sessions", "{{session_id}}", "messages"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            },
+            "description": "Get all messages for a chat session"
+          }
+        },
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway_url}}/api/chat/sessions/{{session_id}}/messages",
+              "host": ["{{gateway_url}}"],
+              "path": ["api", "chat", "sessions", "{{session_id}}", "messages"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"content\": \"Hello, I need help with my account\",\n    \"type\": \"text\"\n}"
+            },
+            "description": "Send a new message in a chat session"
+          }
+        },
+        {
+          "name": "Close Chat Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway_url}}/api/chat/sessions/{{session_id}}/close",
+              "host": ["{{gateway_url}}"],
+              "path": ["api", "chat", "sessions", "{{session_id}}", "close"]
+            },
+            "description": "Close an active chat session"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway_url}}/api/admin/dashboard",
+              "host": ["{{gateway_url}}"],
+              "path": ["api", "admin", "dashboard"]
+            },
+            "description": "Get admin dashboard data"
+          }
+        },
+        {
+          "name": "System Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway_url}}/api/admin/system",
+              "host": ["{{gateway_url}}"],
+              "path": ["api", "admin", "system"]
+            },
+            "description": "Get system status and metrics"
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (pm.response.code === 200 && pm.response.json().token) {",
+          "    pm.environment.set('access_token', pm.response.json().token);",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "gateway_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "customer_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "agent_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ticket_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "session_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
