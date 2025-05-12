@@ -1,0 +1,100 @@
+# Compiled Go binaries
+*/bin/
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Service-specific binaries
+chat-service/chat-service
+crm-service/crm-service
+api-gateway/api-gateway
+
+# Go specific
+*.test
+*.out
+*.prof
+*.cov
+vendor/
+go.work
+__debug_bin
+
+# Environment and configuration
+.env
+.env.*
+*.env.development
+*.env.test
+*.env.production
+config.yaml
+config.json
+secrets.yaml
+secrets.json
+**/config/local.*
+
+# Database files
+*.db
+*.sqlite
+*.rdb
+
+# Docker and data volumes
+data/
+docker/data/
+postgres-data/
+rabbitmq-data/
+docker-compose.override.yml
+
+# Log files
+*.log
+logs/
+*/logs/
+log/
+*/log/
+
+# WebSocket client (front-end specific)
+ws-client/node_modules/
+ws-client/build/
+ws-client/dist/
+ws-client/package-lock.json
+
+# Node.js dependencies across services
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build directories
+dist/
+build/
+*/dist/
+*/build/
+.cache/
+public/build/
+
+# Test coverage
+coverage/
+.coverage
+coverage.html
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.vs/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Generated API files
+openapi-gen/
+**/api/swagger/
+docker-compose.yml

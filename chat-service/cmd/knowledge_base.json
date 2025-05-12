@@ -1,0 +1,32 @@
+[
+  {
+    "id": "greeting",
+    "question": "hello",
+    "answer": "Hello! How can I assist you today?",
+    "keywords": ["hi", "hello", "hey", "greetings"]
+  },
+  {
+    "id": "help",
+    "question": "help",
+    "answer": "I'm here to help! What do you need assistance with?",
+    "keywords": ["help", "assist", "support"]
+  },
+  {
+    "id": "refund_policy",
+    "question": "refund policy",
+    "answer": "Our refund policy allows returns within 30 days of purchase. Please provide your order number to begin the refund process.",
+    "keywords": ["refund", "return", "money back"]
+  },
+  {
+    "id": "shipping_time",
+    "question": "shipping time",
+    "answer": "Standard shipping takes 3-5 business days. Express shipping takes 1-2 business days.",
+    "keywords": ["shipping", "delivery", "arrive"]
+  },
+  {
+    "id": "payment_methods",
+    "question": "payment methods",
+    "answer": "We accept credit cards, PayPal, and bank transfers.",
+    "keywords": ["payment", "pay", "credit card", "paypal"]
+  }
+]

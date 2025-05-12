@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OpenAI Chatbot Test</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    #chatbox { height: 400px; border: 1px solid #ccc; overflow-y: scroll; padding: 10px; margin-bottom: 10px; }
+    .user { text-align: right; color: blue; }
+    .bot { text-align: left; color: green; }
+    .meta { color: #666; font-size: 0.8em; }
+    #controls { display: flex; }
+    #message { flex: 1; padding: 8px; }
+    button { padding: 8px 15px; background: #4CAF50; color: white; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>OpenAI Chatbot Simulator</h1>
+  <div id="chatbox"></div>
+  <div id="controls">
+    <input type="text" id="message" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script>
+    const chatbox = document.getElementById('chatbox');
+    const messageInput = document.getElementById('message');
+    let socket;
+    
+    function connect() {
+      // Use consistent customer ID format
+      const customerId = "customer-" + Date.now();
+      console.log("Connecting with customer_id:", customerId);
+      
+      socket = new WebSocket(`ws://localhost:8091/ws?user_id=tester&customer_id=${customerId}`);
+      
+      socket.onopen = () => {
+        addSystemMessage('Connected to chatbot');
+      };
+      
+      socket.onmessage = (event) => {
+        console.log("Raw message received:", event.data);
+        
+        // Remove all thinking indicators
+        document.querySelectorAll('[id^="thinking-"]').forEach(el => el.remove());
+        
+        try {
+            // Fix 1: Store the customer ID used when connecting
+            const currentCustomerId = socket.customerId;
+            
+            const message = JSON.parse(event.data);
+            console.log('Parsed message:', message);
+            
+            if (Array.isArray(message)) {
+                // Handle history array
+                message.forEach(msg => {
+                    if (msg.type === 'bot') {
+                        addBotMessage(msg.content, msg);
+                    } else if (msg.type === 'user') {
+                        addUserMessage(msg.content);
+                    }
+                });
+            } else if (message.type === 'bot') {
+                // Fix 2: Always show bot messages even if customerID doesn't match
+                addBotMessage(message.content, message);
+                console.log("Bot message displayed:", message.content);
+            } else {
+                // Fix 3: Log any other message types for debugging
+                console.log("Unhandled message type:", message.type, message);
+            }
+        } catch (e) {
+            // Fix 4: Try to display raw message if parsing fails
+            console.error("Error parsing message:", e);
+            try {
+                addSystemMessage(`Raw message: ${event.data}`);
+            } catch (e2) {
+                console.error("Failed to display raw message:", e2);
+            }
+        }
+      };
+      
+      socket.onclose = () => {
+        addSystemMessage('Disconnected from chatbot');
+        setTimeout(connect, 3000); // Try to reconnect
+      };
+      
+      socket.onerror = (error) => {
+        addSystemMessage(`Error: ${error.message}`);
+      };
+    }
+    
+    function sendMessage() {
+      const content = messageInput.value.trim();
+      if (!content) return;
+      
+      const message = {
+        content: content,
+        type: "user"
+      };
+      
+      if (socket.readyState === WebSocket.OPEN) {
+        addUserMessage(content);
+        
+        // Add thinking indicator with unique ID
+        const thinkingId = "thinking-" + Date.now();
+        addThinkingIndicator(thinkingId);
+        
+        socket.send(JSON.stringify(message));
+        messageInput.value = '';
+      } else {
+        addSystemMessage('Not connected. Trying to reconnect...');
+        connect();
+      }
+    }
+    
+    function addUserMessage(content) {
+      const div = document.createElement('div');
+      div.className = 'user';
+      div.innerHTML = `<div>${content}</div><div class="meta">You</div>`;
+      chatbox.appendChild(div);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+    
+    function addBotMessage(content, messageObj) {
+      const div = document.createElement('div');
+      div.className = 'bot';
+      div.innerHTML = `<div>${content}</div><div class="meta">Bot (${messageObj.ID})</div>`;
+      chatbox.appendChild(div);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+    
+    function addSystemMessage(content) {
+      const div = document.createElement('div');
+      div.innerHTML = `<i>${content}</i>`;
+      chatbox.appendChild(div);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+    
+    // Add this new function
+    function addThinkingIndicator(id) {
+      const div = document.createElement('div');
+      div.className = 'bot';
+      div.id = id; // Set ID so we can remove it later
+      div.innerHTML = '<div><i>Bot is thinking...</i></div>';
+      chatbox.appendChild(div);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+    
+    // Connect on page load
+    connect();
+    
+    // Allow sending with Enter key
+    messageInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+  </script>
+</body>
+</html>
