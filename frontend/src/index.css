@@ -1,1 +1,43 @@
 @import "tailwindcss";
+
+/* Custom styles using @layer and CSS variables for colors */
+
+@layer base {
+  :root {
+    /* Define your primary color shades as CSS variables */
+    --color-primary-100: #E0E7FF;
+    --color-primary-500: #3B82F6;
+    --color-primary-600: #2563EB;
+    --color-primary-700: #1D4ED8;
+    --color-primary-800: #1E40AF;
+
+    /* Font family */
+    --font-sans: 'Inter var', ui-sans-serif, system-ui, -apple-system,
+      BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+      Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+      'Segoe UI Symbol', 'Noto Color Emoji';
+  }
+
+  body {
+    font-family: var(--font-sans);
+  }
+}
+
+/* Example usage with custom color variables */
+@layer utilities {
+  .bg-primary-600 {
+    background-color: var(--color-primary-600);
+  }
+
+  .text-primary-800 {
+    color: var(--color-primary-800);
+  }
+
+  .hover\:bg-primary-700:hover {
+    background-color: var(--color-primary-700);
+  }
+
+  .border-primary-500 {
+    border-color: var(--color-primary-500);
+  }
+}

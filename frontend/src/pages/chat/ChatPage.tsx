@@ -7,7 +7,7 @@ import Button from '../../components/common/Button'
 import { customerService } from '../../services/customerService'
 import { useAuthStore } from '../../store/authStore'
 import { formatDate } from '../../utils/formatters'
-import { useChatWebSocket } from '../../hooks/useChatWebSocket' // Import the custom hook
+import { useChatWebSocket } from '../../hooks/useChatWebsocket' // Import the custom hook
 
 // Keep Message interface here or move to a types file and import in both places
 export interface Message {

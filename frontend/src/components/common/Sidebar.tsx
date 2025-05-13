@@ -6,6 +6,7 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: 'HomeIcon' },
   { name: 'Customers', href: '/customers', icon: 'UsersIcon' },
   { name: 'Tickets', href: '/tickets', icon: 'TicketIcon' },
+  { name: 'Agents', href: '/agents', icon: 'AgentIcon' },
   { name: 'Chat', href: '/chat', icon: 'ChatIcon' },
   { name: 'Settings', href: '/settings', icon: 'CogIcon' },
 ]

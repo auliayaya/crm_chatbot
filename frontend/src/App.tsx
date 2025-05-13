@@ -7,7 +7,6 @@ import DashboardPage from './pages/dashboard/DashboardPage'
 
 import TicketsPage from './pages/tickets/TicketsPage'
 // import TicketDetailPage from './pages/tickets/TicketDetailPage'
-// import AgentsPage from './pages/agents/AgentsPage'
 // import ChatPage from './pages/chat/ChatPage'
 // import SettingsPage from './pages/settings/SettingsPage'
 // import NotFoundPage from './pages/NotFoundPage'
@@ -16,6 +15,7 @@ import RegisterPage from './pages/auth/RegisterPage'
 import CustomerDetailPage from './pages/customers/CustomerDetailPage'
 import CustomerPage from './pages/customers/CustomerPage'
 import ChatPage from './pages/chat/ChatPage'
+import AgentsPage from './pages/agents/AgentsPage'
 
 interface ProtectedRouteProps {
   children: JSX.Element
@@ -81,14 +81,14 @@ export default function App() {
           </ProtectedRoute>
         }
       />
-      {/* <Route 
+       {/* <Route 
         path="/tickets/:id"
         element={
           <ProtectedRoute>
             <TicketDetailPage />
           </ProtectedRoute>
         }
-      />
+      /> */}
       <Route
         path="/agents"
         element={
@@ -96,7 +96,7 @@ export default function App() {
             <AgentsPage />
           </ProtectedRoute>
         }
-      /> */}
+      /> 
       <Route
         path="/chat/:customerId"
         element={
