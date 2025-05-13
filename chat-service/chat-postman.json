@@ -1,0 +1,240 @@
+{
+  "info": {
+    "_postman_id": "a8f7e2c1-ad6b-4e9e-8dc7-f12b456789ab",
+    "name": "Chat Service API",
+    "description": "Collection for testing the Chat Service API endpoints including WebSocket connections",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["health"]
+        },
+        "description": "Simple health check endpoint"
+      },
+      "response": []
+    },
+    {
+      "name": "WebSocket Connection",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "ws://localhost:8080/ws?user_id={{user_id}}&customer_id={{customer_id}}",
+          "protocol": "ws",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["ws"],
+          "query": [
+            {
+              "key": "user_id",
+              "value": "{{user_id}}"
+            },
+            {
+              "key": "customer_id",
+              "value": "{{customer_id}}"
+            }
+          ]
+        },
+        "description": "Connect to chat WebSocket endpoint"
+      },
+      "response": []
+    },
+    {
+      "name": "Send Chat Message (WebSocket)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// This script is for documentation purposes. In Postman's WebSocket interface,",
+              "// you would manually send this JSON after connecting"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"content\": \"Hello, this is a test message!\",\n    \"user_id\": \"{{user_id}}\",\n    \"customer_id\": \"{{customer_id}}\",\n    \"sender_type\": \"user\",\n    \"metadata\": {\n        \"conversation_id\": \"{{conversation_id}}\"\n    }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "ws://localhost:8080/ws?user_id={{user_id}}&customer_id={{customer_id}}",
+          "protocol": "ws",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["ws"],
+          "query": [
+            {
+              "key": "user_id",
+              "value": "{{user_id}}"
+            },
+            {
+              "key": "customer_id",
+              "value": "{{customer_id}}"
+            }
+          ]
+        },
+        "description": "Example of a message to send over WebSocket"
+      },
+      "response": []
+    },
+    {
+      "name": "Knowledge Base Endpoints",
+      "item": [
+        {
+          "name": "Get Knowledge Base Entries",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/admin/knowledge",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "admin", "knowledge"]
+            },
+            "description": "Retrieve knowledge base entries"
+          },
+          "response": []
+        },
+        {
+          "name": "Add Knowledge Base Entry",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"question\": \"What are your business hours?\",\n    \"answer\": \"Our business hours are Monday through Friday, 9 AM to 5 PM Eastern Time.\",\n    \"category\": \"general\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/admin/knowledge",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "admin", "knowledge"]
+            },
+            "description": "Add a new knowledge base entry"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Knowledge Base Entry",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"question\": \"What are your business hours?\",\n    \"answer\": \"Our updated business hours are Monday through Friday, 8 AM to 6 PM Eastern Time.\",\n    \"category\": \"general\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/admin/knowledge/{{entry_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "admin", "knowledge", "{{entry_id}}"]
+            },
+            "description": "Update an existing knowledge base entry"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Knowledge Base Entry",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/admin/knowledge/{{entry_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "admin", "knowledge", "{{entry_id}}"]
+            },
+            "description": "Delete a knowledge base entry"
+          },
+          "response": []
+        }
+      ],
+      "description": "Admin endpoints for managing the knowledge base"
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "key": "auth_token",
+      "value": "your-auth-token-here"
+    },
+    {
+      "key": "user_id",
+      "value": "user-123"
+    },
+    {
+      "key": "customer_id",
+      "value": "customer-456"
+    },
+    {
+      "key": "conversation_id",
+      "value": ""
+    },
+    {
+      "key": "entry_id",
+      "value": ""
+    }
+  ]
+}

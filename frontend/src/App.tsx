@@ -15,6 +15,7 @@ import type { JSX } from 'react'
 import RegisterPage from './pages/auth/RegisterPage'
 import CustomerDetailPage from './pages/customers/CustomerDetailPage'
 import CustomerPage from './pages/customers/CustomerPage'
+import ChatPage from './pages/chat/ChatPage'
 
 interface ProtectedRouteProps {
   children: JSX.Element
@@ -95,23 +96,23 @@ export default function App() {
             <AgentsPage />
           </ProtectedRoute>
         }
-      />
+      /> */}
       <Route
-        path="/chat"
+        path="/chat/:customerId"
         element={
           <ProtectedRoute>
             <ChatPage />
           </ProtectedRoute>
         }
       />
-      <Route
+      {/* <Route
         path="/settings"
         element={
           <ProtectedRoute>
             <SettingsPage />
           </ProtectedRoute>
         }
-      />
+      /> */}
 
       {/* 404 page */}
       {/* <Route path="*" element={<NotFoundPage />} /> *} */}

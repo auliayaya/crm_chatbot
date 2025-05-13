@@ -31,7 +31,7 @@
       const customerId = "customer-" + Date.now();
       console.log("Connecting with customer_id:", customerId);
       
-      socket = new WebSocket(`ws://localhost:8091/ws?user_id=tester&customer_id=${customerId}`);
+      socket = new WebSocket(`ws://localhost:8080/chat/ws?user_id=tester&customer_id=${customerId}`);
       
       socket.onopen = () => {
         addSystemMessage('Connected to chatbot');

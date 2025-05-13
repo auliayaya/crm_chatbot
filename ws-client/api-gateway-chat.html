@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <h1>WebSocket Test</h1>
+    <div id="status">Connecting...</div>
+    <div id="messages"></div>
+    <script>
+        const statusDiv = document.getElementById('status');
+        const messagesDiv = document.getElementById('messages');
+        
+        // Create WebSocket connection
+        const ws = new WebSocket('ws://localhost:8080/chat/ws?user_id=user1&customer_id=cust1');
+        
+        ws.onopen = function() {
+            statusDiv.textContent = 'Connected!';
+            statusDiv.style.color = 'green';
+            
+            // Send a test message
+            ws.send(JSON.stringify({
+                content: "Test message",
+                user_id: "user1",
+                customer_id: "cust1",
+                sender_type: "user"
+            }));
+        };
+        
+        ws.onmessage = function(event) {
+            const msg = document.createElement('div');
+            msg.textContent = 'Received: ' + event.data;
+            messagesDiv.appendChild(msg);
+        };
+        
+        ws.onerror = function(error) {
+            statusDiv.textContent = 'Error: ' + JSON.stringify(error);
+            statusDiv.style.color = 'red';
+        };
+        
+        ws.onclose = function(event) {
+            statusDiv.textContent = 'Disconnected: Code=' + event.code + ' Reason=' + event.reason;
+            statusDiv.style.color = 'orange';
+        };
+    </script>
+</body>
+</html>

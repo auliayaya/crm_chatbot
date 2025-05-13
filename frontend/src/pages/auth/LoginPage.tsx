@@ -40,7 +40,7 @@ export default function LoginPage() {
     mutationFn: (credentials: FormValues) =>
       authService.login(credentials.emailOrUsername, credentials.password),
     onSuccess: (data) => {
-      setAuth(data.user, data.token)
+      setAuth({token: data.token})
       navigate('/dashboard')
     },
     onError: (error: { response?: { data?: { message?: string } } }) => {

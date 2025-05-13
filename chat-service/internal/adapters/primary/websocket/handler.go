@@ -19,6 +19,10 @@ var upgrader = websocket.Upgrader{
 
 // ServeWS handles WebSocket requests from clients
 func ServeWS(hub *Hub, w http.ResponseWriter, r *http.Request) {
+	// Add detailed logging
+	log.Printf("WS CONNECT REQUEST: Method=%s Path=%s Query=%s Headers=%v",
+		r.Method, r.URL.Path, r.URL.RawQuery, r.Header)
+
 	// Extract user ID and customer ID from request
 	userID := r.URL.Query().Get("user_id")
 	customerID := r.URL.Query().Get("customer_id")
@@ -43,8 +47,8 @@ func ServeWS(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	log.Printf("WS REGISTER: New client registered userID=%s, customerID=%s, addr=%s", 
-	userID, customerID, conn.RemoteAddr().String())
+	log.Printf("WS REGISTER: New client registered userID=%s, customerID=%s, addr=%s",
+		userID, customerID, conn.RemoteAddr().String())
 	client := &Client{
 		hub:            hub,
 		conn:           conn,
