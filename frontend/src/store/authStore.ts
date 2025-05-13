@@ -37,12 +37,12 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 
           // Construct the user object from the decoded token claims
           const userData: User = {
-            id: decodedToken.sub,
+            id: decodedToken.username,
             username: decodedToken.username,
-            role: "user",
-            firstName: "", 
-            lastName: "",
-            email: "",
+            role: 'user',
+            firstName: '',
+            lastName: '',
+            email: '',
             // Map other claims to your User interface as needed
             // name: decodedToken.name, (if 'name' claim exists)
             // email: decodedToken.email, (if 'email' claim exists)

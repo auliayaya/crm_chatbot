@@ -7,10 +7,11 @@ import Button from '../../components/common/Button'
 import { customerService } from '../../services/customerService'
 import { useAuthStore } from '../../store/authStore'
 import { formatDate } from '../../utils/formatters'
-import { useChatWebSocket } from '../../hooks/useChatWebSocket'; // Import the custom hook
+import { useChatWebSocket } from '../../hooks/useChatWebSocket' // Import the custom hook
 
 // Keep Message interface here or move to a types file and import in both places
-export interface Message { // Export if hook needs it from a separate file
+export interface Message {
+  // Export if hook needs it from a separate file
   id?: string
   content: string
   user_id: string
@@ -28,16 +29,22 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([])
   const [newMessage, setNewMessage] = useState('')
   // const [isConnected, setIsConnected] = useState(false) // Managed by hook
-  const [isLoading, setIsLoading] = useState(true) // For initial customer load primarily
+  const [isLoading, setIsLoading] = useState(true) // This will be our primary page loader state
+  const [hasReceivedInitialMessages, setHasReceivedInitialMessages] =
+    useState(false)
   const [isThinking, setIsThinking] = useState(false)
   // const [error, setError] = useState<string | null>(null) // Combined with webSocketError
-  const [appError, setAppError] = useState<string | null>(null); // For non-WebSocket errors
+  const [appError, setAppError] = useState<string | null>(null) // For non-WebSocket errors
   const [conversationId, setConversationId] = useState<string>('')
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  const { data: customer, isLoading: isCustomerLoading, error: customerError } = useQuery({
+  const {
+    data: customer,
+    isLoading: isCustomerLoading,
+    error: customerError,
+  } = useQuery({
     queryKey: ['customer', routeCustomerId],
     queryFn: () => customerService.getCustomerById(routeCustomerId as string),
     enabled: !!routeCustomerId,
@@ -45,13 +52,13 @@ export default function ChatPage() {
 
   useEffect(() => {
     if (!isCustomerLoading) {
-      setIsLoading(false);
+      setIsLoading(false)
     }
     if (customerError) {
-      setAppError(customerError.message);
-      setIsLoading(false);
+      setAppError(customerError.message)
+      setIsLoading(false)
     }
-  }, [isCustomerLoading, customerError]);
+  }, [isCustomerLoading, customerError])
 
   const addSystemMessage = useCallback(
     (content: string) => {
@@ -67,6 +74,7 @@ export default function ChatPage() {
     },
     [routeCustomerId]
   )
+  console.log('User ', user?.id, ' Customer: ', routeCustomerId)
 
   const getWebSocketUrl = useCallback(
     (currentUserId: string, currentCustId: string) => {
@@ -83,116 +91,168 @@ export default function ChatPage() {
     []
   )
 
-  const handleReceivedMessage = useCallback((data: string) => {
-    let parsedData: any;
-    try {
-      parsedData = JSON.parse(data);
-      console.log("WebSocket: Received raw data:", parsedData);
-    } catch (err) {
-      console.error("WebSocket: Failed to parse message data", err);
-      return;
-    }
-
-    if (Array.isArray(parsedData)) {
-      console.log("WebSocket: Detected history array from backend.", parsedData);
-      const historyMessages: Message[] = parsedData
-        .map((histMsg: any): Message | null => {
-          if (histMsg.type === 'ping' || (!histMsg.content && histMsg.type !== 'system')) {
-            return null;
-          }
-          let frontendType: Message['type'];
-          switch (histMsg.type) {
-            case 'user_message': case 'user': frontendType = 'user'; break;
-            case 'bot_message': case 'bot': frontendType = 'bot'; break;
-            case 'customer_message': case 'customer': frontendType = 'customer'; break;
-            case 'system_message': case 'system': frontendType = 'system'; break;
-            default:
-              if (!histMsg.type && histMsg.content) {
-                if (histMsg.user_id && histMsg.user_id.toLowerCase().includes('bot')) {
-                  frontendType = 'bot';
-                } else if (histMsg.user_id) {
-                  frontendType = 'user';
-                } else { return null; }
-              } else { return null; }
-          }
-          const content = typeof histMsg.content === 'string' ? histMsg.content : '';
-          if (!content && frontendType !== 'system') return null;
-
-          return {
-            id: histMsg.id || histMsg.ID || `hist-${Date.now()}-${Math.random()}`,
-            content: content,
-            user_id: histMsg.user_id || histMsg.UserID,
-            customer_id: histMsg.customer_id || histMsg.CustomerID,
-            type: frontendType,
-            created_at: histMsg.timestamp || histMsg.Timestamp || histMsg.CreatedAt,
-            conversation_id: histMsg.conversation_id || histMsg.ConversationID,
-            metadata: histMsg.metadata || histMsg.Metadata,
-            status: 'complete',
-          };
-        })
-        .filter((msg): msg is Message => msg !== null);
-
-      console.log("WebSocket: Processed and filtered history messages:", historyMessages);
-      setMessages(historyMessages); // Assuming history replaces current messages
-      if (historyMessages.length > 0 && historyMessages[0].conversation_id && !conversationId) {
-        setConversationId(historyMessages[0].conversation_id);
+  const handleReceivedMessage = useCallback(
+    (data: string) => {
+      let parsedData: any
+      try {
+        parsedData = JSON.parse(data)
+        // console.log('WebSocket: Received raw data:', parsedData); // Keep for debugging
+      } catch (err) {
+        console.error('WebSocket: Failed to parse message data', err)
+        // Potentially set an appError here if needed
+        return
       }
-      return;
-    }
 
-    // Single message processing
-    const receivedMessage: Message = {
-      id: parsedData.id || `msg-${Date.now()}-${Math.random()}`,
-      content: parsedData.content,
-      user_id: parsedData.user_id,
-      customer_id: parsedData.customer_id,
-      type: parsedData.type as Message['type'],
-      created_at: parsedData.timestamp,
-      conversation_id: parsedData.conversation_id,
-      metadata: parsedData.metadata,
-      status: 'complete',
-    };
-    console.log("WebSocket: Processed single message:", receivedMessage);
+      if (Array.isArray(parsedData)) {
+        console.log(
+          'WebSocket: Detected history array from backend.',
+          parsedData
+        )
+        const historyMessages: Message[] = parsedData
+          .map((histMsg: any): Message | null => {
+            if (
+              histMsg.type === 'ping' ||
+              (!histMsg.content && histMsg.type !== 'system')
+            ) {
+              return null
+            }
+            let frontendType: Message['type']
+            switch (histMsg.type) {
+              case 'user_message':
+              case 'user':
+                frontendType = 'user'
+                break
+              case 'bot_message':
+              case 'bot':
+                frontendType = 'bot'
+                break
+              case 'customer_message':
+              case 'customer':
+                frontendType = 'customer'
+                break
+              case 'system_message':
+              case 'system':
+                frontendType = 'system'
+                break
+              default:
+                if (!histMsg.type && histMsg.content) {
+                  if (
+                    histMsg.user_id &&
+                    histMsg.user_id.toLowerCase().includes('bot')
+                  ) {
+                    frontendType = 'bot'
+                  } else if (histMsg.user_id) {
+                    frontendType = 'user'
+                  } else {
+                    return null
+                  }
+                } else {
+                  return null
+                }
+            }
+            const content =
+              typeof histMsg.content === 'string' ? histMsg.content : ''
+            if (!content && frontendType !== 'system') return null
 
-    setMessages((prevMessages) =>
-      prevMessages.filter(msg => !(msg.type === 'bot' && msg.status === 'thinking'))
-    );
-    setIsThinking(false);
+            return {
+              id:
+                histMsg.id ||
+                histMsg.ID ||
+                `hist-${Date.now()}-${Math.random()}`,
+              content: content,
+              user_id: histMsg.user_id || histMsg.UserID,
+              customer_id: histMsg.customer_id || histMsg.CustomerID,
+              type: frontendType,
+              created_at:
+                histMsg.timestamp || histMsg.Timestamp || histMsg.CreatedAt,
+              conversation_id:
+                histMsg.conversation_id || histMsg.ConversationID,
+              metadata: histMsg.metadata || histMsg.Metadata,
+              status: 'complete',
+            }
+          })
+          .filter((msg): msg is Message => msg !== null)
 
-    if (receivedMessage.type === 'system') {
-      if (receivedMessage.metadata?.conversation_id && !conversationId) {
-        setConversationId(receivedMessage.metadata.conversation_id);
-      }
-      // Further system message specific logic can go here
-    }
-    // Add non-duplicate message
-     setMessages((prevMessages) => {
-        if (receivedMessage.id && prevMessages.some((msg) => msg.id === receivedMessage.id)) {
-            return prevMessages;
+        console.log(
+          'WebSocket: Processed and filtered history messages:',
+          historyMessages
+        )
+        setMessages(historyMessages) // Assuming history replaces current messages
+        if (
+          historyMessages.length > 0 &&
+          historyMessages[0].conversation_id &&
+          !conversationId
+        ) {
+          setConversationId(historyMessages[0].conversation_id)
         }
-        return [...prevMessages, receivedMessage];
-    });
+        setHasReceivedInitialMessages(true) // Mark that history/initial messages are processed
+        return
+      }
 
-  }, [conversationId]); // Added conversationId dependency
+      // Single message processing
+      const receivedMessage: Message = {
+        id: parsedData.id || `msg-${Date.now()}-${Math.random()}`,
+        content: parsedData.content,
+        user_id: parsedData.user_id,
+        customer_id: parsedData.customer_id,
+        type: parsedData.type as Message['type'],
+        created_at: parsedData.timestamp,
+        conversation_id: parsedData.conversation_id,
+        metadata: parsedData.metadata,
+        status: 'complete',
+      }
+      console.log('WebSocket: Processed single message:', receivedMessage)
 
-  const { 
-    isConnected, 
-    sendMessage: sendWsMessage, 
-    webSocketError 
+      setMessages((prevMessages) =>
+        prevMessages.filter(
+          (msg) => !(msg.type === 'bot' && msg.status === 'thinking')
+        )
+      )
+      setIsThinking(false)
+
+      if (receivedMessage.type === 'system') {
+        if (receivedMessage.metadata?.conversation_id && !conversationId) {
+          setConversationId(receivedMessage.metadata.conversation_id)
+        }
+        // Further system message specific logic can go here
+      }
+      // Add non-duplicate message
+      setMessages((prevMessages) => {
+        if (
+          receivedMessage.id &&
+          prevMessages.some((msg) => msg.id === receivedMessage.id)
+        ) {
+          return prevMessages
+        }
+        return [...prevMessages, receivedMessage]
+      })
+
+      // If this is the very first message and no history was received (e.g., a brand new chat)
+      if (!hasReceivedInitialMessages) {
+        setHasReceivedInitialMessages(true)
+      }
+      setIsThinking(false) // Ensure thinking is stopped
+    },
+    [conversationId, hasReceivedInitialMessages] // Add hasReceivedInitialMessages
+  ) // Added conversationId dependency
+
+  const {
+    isConnected,
+    sendMessage: sendWsMessage,
+    webSocketError,
   } = useChatWebSocket({
     userId: user?.id,
     customerId: routeCustomerId,
     onMessageReceived: handleReceivedMessage,
     addSystemMessage,
     getWebSocketUrl,
-  });
+  })
 
-  // Effect to clear messages when customer/user changes, handled by hook re-init
-   useEffect(() => {
-    setMessages([]);
-    setIsLoading(true); // Reset loading when dependencies for connection change
-  }, [routeCustomerId, user?.id]);
-
+  // Effect to clear messages when customer/user changes
+  useEffect(() => {
+    setMessages([])
+    setIsLoading(true) // Reset loading when dependencies for connection change
+  }, [routeCustomerId, user?.id])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -209,16 +269,19 @@ export default function ChatPage() {
     const currentCustId = routeCustomerId
 
     if (!currentUserId || !currentCustId) {
-      setAppError('Cannot send message: User or customer information is missing.');
-      return;
+      setAppError(
+        'Cannot send message: User or customer information is missing.'
+      )
+      return
     }
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim()) return
     if (!isConnected) {
-      setAppError('Cannot send message: Connection lost.');
-      return;
+      setAppError('Cannot send message: Connection lost.')
+      return
     }
 
-    const messageData: Omit<Message, 'id' | 'status'> = { // Omit fields that are added optimistically or by backend
+    const messageData: Omit<Message, 'id' | 'status'> = {
+      // Omit fields that are added optimistically or by backend
       content: newMessage.trim(),
       user_id: currentUserId,
       customer_id: currentCustId,
@@ -226,19 +289,19 @@ export default function ChatPage() {
       metadata: { conversation_id: conversationId },
       created_at: new Date().toISOString(),
       conversation_id: conversationId,
-    };
+    }
 
-    sendWsMessage(messageData); // Use sendMessage from hook
+    sendWsMessage(messageData) // Use sendMessage from hook
 
     const optimisticMessage: Message = {
       ...messageData,
       id: `temp-user-${Date.now()}`,
       status: 'complete',
-    };
-    setMessages((prev) => [...prev, optimisticMessage]);
-    setNewMessage('');
+    }
+    setMessages((prev) => [...prev, optimisticMessage])
+    setNewMessage('')
 
-    setIsThinking(true);
+    setIsThinking(true)
     const thinkingMessage: Message = {
       id: `thinking-${Date.now()}`,
       content: '...',
@@ -248,25 +311,47 @@ export default function ChatPage() {
       status: 'thinking',
       created_at: new Date().toISOString(),
       conversation_id: conversationId,
-    };
-    setMessages((prev) => [...prev, thinkingMessage]);
+    }
+    setMessages((prev) => [...prev, thinkingMessage])
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
+      e.preventDefault()
+      sendMessage()
     }
   }
-  
-  const displayError = appError || webSocketError;
 
-  // Render logic (largely unchanged, but uses `isConnected` and `displayError`)
+  // Stop loading ONLY if customer data is ready AND initial messages have been processed
+  useEffect(() => {
+    if (!isCustomerLoading && hasReceivedInitialMessages) {
+      setIsLoading(false)
+    }
+
+    // If there's a customer query error, stop loading and show that error
+    if (customerError) {
+      setAppError(customerError.message)
+      setIsLoading(false)
+    }
+  }, [isCustomerLoading, hasReceivedInitialMessages, customerError])
+
+  // If WebSocket has a persistent error, also stop loading to show the error
+  useEffect(() => {
+    if (webSocketError) {
+      // webSocketError is already set by the hook, appError can be used for other errors
+      // setAppError(webSocketError); // Or just let displayError handle it
+      setIsLoading(false)
+    }
+  }, [webSocketError])
+
+  const displayError = appError || webSocketError
+
   return (
     <DashboardLayout>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">
-          Chat with {customer?.firstName} {customer?.lastName || routeCustomerId}
+          Chat with {customer?.firstName}{' '}
+          {customer?.lastName || routeCustomerId}
         </h1>
         <div className="flex items-center space-x-2">
           <span
@@ -281,7 +366,7 @@ export default function ChatPage() {
       </div>
 
       <Card>
-        {isLoading ? ( // This isLoading is now for customer data primarily
+        {isLoading ? ( // Use the refined isLoading state
           <div className="flex justify-center items-center h-96">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
           </div>
@@ -299,34 +384,77 @@ export default function ChatPage() {
               ) : (
                 messages.map((message, index) => (
                   <div
-                    key={message.id || `msg-${index}-${message.type}-${message.created_at}`} // Improved key
-                    className={`flex ${
+                    key={
+                      message.id ||
+                      `msg-${index}-${message.type}-${message.created_at}`
+                    }
+                    className={`flex w-full ${
+                      // Added w-full for better control if needed
                       message.type === 'user' ? 'justify-end' : 'justify-start'
                     }`}
                   >
                     <div
-                      className={`max-w-[70%] rounded-lg p-3 ${
+                      className={`max-w-[70%] min-w-[80px] rounded-lg px-3 py-2 shadow-sm ${
+                        // Adjusted padding, added min-width and shadow
                         message.type === 'user'
-                          ? 'bg-primary-100 text-primary-800'
+                          ? 'bg-primary-100 text-primary-800 rounded-br-none' // Example: Tweak corner for "tail"
                           : message.type === 'system'
-                          ? 'bg-gray-100 text-gray-800 italic'
+                          ? 'bg-gray-100 text-gray-700 italic text-center w-full max-w-full' // System messages can be styled differently
                           : message.type === 'bot'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-white border border-gray-200' // Default for 'customer' or other
+                          ? 'bg-green-100 text-green-800 rounded-bl-none' // Example: Tweak corner for "tail"
+                          : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none' // Customer messages
                       }`}
                     >
-                      <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+                      {/* Main message content */}
+                      {message.type !== 'system' && ( // System messages might not have typical "content" display
+                        <div className="text-sm whitespace-pre-wrap break-words">
+                          {message.content}
+                        </div>
+                      )}
+                      {/* System message content (if different styling) */}
+                      {message.type === 'system' && (
+                        <div className="text-xs italic whitespace-pre-wrap break-words">
+                          {message.content}
+                        </div>
+                      )}
+
+                      {/* Thinking indicator for bot */}
                       {message.status === 'thinking' &&
                         message.type === 'bot' && (
                           <div className="italic text-xs text-gray-500 flex items-center mt-1">
-                            <span className="animate-pulse">Bot is thinking</span>
+                            <span className="animate-pulse">
+                              Bot is thinking
+                            </span>
                             <span className="animate-bounce ml-1">...</span>
                           </div>
                         )}
-                      <div className="text-xs text-gray-500 mt-1">
-                        {message.created_at
-                          ? formatDate(message.created_at)
-                          : 'Just now'}
+
+                      {/* Metadata: Timestamp, Type, ID */}
+                      <div
+                        className={`mt-1.5 pt-1 ${
+                          message.type !== 'system'
+                            ? 'border-t border-gray-200 dark:border-gray-600'
+                            : ''
+                        } text-right`}
+                      >
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500 mr-2">
+                          {message.type.toUpperCase()}
+                        </span>
+                        {message.type !== 'system' && ( // Don't show ID for system messages unless desired
+                          <span className="text-[10px] text-gray-400 dark:text-gray-500 mr-2">
+                            ID:{' '}
+                            {(message.type === 'customer'
+                              ? message.customer_id
+                              : message.user_id
+                            ).substring(0, 8)}
+                            ...
+                          </span>
+                        )}
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                          {message.created_at
+                            ? formatDate(message.created_at, 'p') // Using short time format
+                            : 'sending...'}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -352,22 +480,22 @@ export default function ChatPage() {
                     !isConnected ||
                     !newMessage.trim() ||
                     isThinking ||
-                    isLoading || // General loading state
-                    isCustomerLoading // Specifically customer loading
+                    isLoading ||
+                    isCustomerLoading
                   }
-                  className="self-end" // Removed bg-blue, rely on variant
+                  className="self-end"
                   type="button"
-                  variant="secondary" // Or your preferred variant
+                  variant="secondary"
                 >
                   {isThinking ? 'Waiting...' : 'Send'}
                 </Button>
               </div>
-              {!isConnected &&
-                !isLoading && !isCustomerLoading && ( // Show only if not loading customer
-                  <p className="text-sm text-red-500 mt-2">
-                    You are currently disconnected. Please wait for reconnection or refresh.
-                  </p>
-                )}
+              {!isConnected && !isLoading && !isCustomerLoading && (
+                <p className="text-sm text-red-500 mt-2">
+                  You are currently disconnected. Please wait for reconnection
+                  or refresh.
+                </p>
+              )}
             </div>
           </>
         )}
