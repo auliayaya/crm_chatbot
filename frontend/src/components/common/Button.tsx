@@ -1,4 +1,3 @@
-
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../../utils/cn'
@@ -10,9 +9,9 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: 'bg-primary-600 text-white hover:bg-primary-700',
-        secondary: 'bg-secondary-600 text-white hover:bg-secondary-700',
-        outline: 'border border-gray-300 bg-transparent hover:bg-gray-50',
-        ghost: 'bg-transparent hover:bg-gray-100',
+        secondary: 'bg-blue-500 text-white hover:bg-blue-600', // Changed for visibility
+        outline: 'border border-gray-300 bg-transparent hover:bg-gray-50 text-gray-700', // Added text color for outline
+        ghost: 'bg-transparent hover:bg-gray-100 text-gray-700', // Added text color for ghost
         danger: 'bg-red-600 text-white hover:bg-red-700',
       },
       size: {
