@@ -10,7 +10,7 @@ const rl = readline.createInterface({
 
 // Configuration
 const config = {
-  url: 'ws://localhost:8091/ws',
+  url: 'ws://localhost:8080/chat/ws',
   userId: 'agent1',
   customerId: 'cust123',
   autoMessageInterval: 3000, // ms
